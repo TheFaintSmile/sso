@@ -1,8 +1,8 @@
 export enum ConfigKey {
-    App = 'APP',
-    Db = 'DB',
-  }
-  
+  App = 'APP',
+  Db = 'DB',
+}
+
 export enum Environment {
   Local = 'local',
   Production = 'production',

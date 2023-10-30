@@ -5,11 +5,10 @@ import { configurations } from './configuration';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: [".env.local", ".env"],
+      envFilePath: ['.env.local', '.env'],
       load: [...configurations],
       isGlobal: true,
     }),
   ],
 })
-
 export class ConfigurationModule {}
