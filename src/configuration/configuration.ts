@@ -13,13 +13,13 @@ const AppsConfig = registerAs(
 );
 
 const DBConfig = registerAs(
-  ConfigKey.Db,
+  ConfigKey.Database,
   (): DatabaseConfig => ({
     host: process.env.DATABASE_HOST,
     port: Number(process.env.DATABASE_PORT),
-    user: process.env.DATABASE_USER,
+    username: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
-    name: process.env.DATABASE_NAME,
+    database: process.env.DATABASE_NAME,
   }),
 );
 

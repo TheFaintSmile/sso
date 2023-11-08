@@ -1,6 +1,6 @@
 export enum ConfigKey {
   App = 'APP',
-  Db = 'DB',
+  Database = 'DB',
 }
 
 export enum Environment {

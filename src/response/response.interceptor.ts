@@ -34,7 +34,7 @@ export class ResponseInterceptor implements NestInterceptor {
     response.status(status).json({
       success: false,
       message: exception.message,
-      code: status,
+      statusCode: status,
       data: exception,
     });
   }
@@ -46,7 +46,7 @@ export class ResponseInterceptor implements NestInterceptor {
     return {
       success: true,
       message: 'Success!',
-      code: response.statusCode,
+      statusCode: response.statusCode,
       data: data,
     };
   }
