@@ -7,12 +7,16 @@ import * as path from 'path';
 import { LoginInterface } from 'src/common/interfaces';
 import { TokenPayload } from 'src/common/dtos';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly httpService: HttpService,
     private readonly jwtService: JwtService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   public async getTest(): Promise<string> {
@@ -53,17 +57,17 @@ export class AuthService {
 
     let user: User;
 
-    user = await User.findOneBy({
+    user = await this.userRepository.findOneBy({
       username: username,
-    });
+    })
 
     if (!!!user) {
-      user = await User.create({
-        username: username,
+      user = await this.userRepository.save({
         name: name,
         npm: npm,
-        ...student_org,
-      }).save();
+        username: username,
+        ...student_org
+      });
     }
 
     const payload = {
@@ -79,6 +83,14 @@ export class AuthService {
       refreshToken: refreshToken,
       user: user,
     };
+  }
+
+  public async profile(sub: string): Promise<User> {
+    return await this.userRepository.findOneOrFail({
+      where: {
+        id: sub,
+      }
+    });
   }
 
   private async getAccessToken(payload: TokenPayload): Promise<string> {

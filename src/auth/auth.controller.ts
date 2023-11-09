@@ -1,14 +1,14 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDTO } from 'src/common/dtos';
 import { LoginInterface } from 'src/common/interfaces';
 import { Public } from 'src/common/middlewares';
+import { User } from 'src/common/entities';
 
 @Controller('/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Public()
   @Get('/test/')
   public async getTest(): Promise<string> {
     return this.authService.getTest();
@@ -27,5 +27,12 @@ export class AuthController {
     const response = await this.authService.login(ticket);
 
     return response;
+  }
+
+  @Get("/profile")
+  public async profile(@Request() req): Promise<User> {
+    const { sub } = req.user
+
+    return await this.authService.profile(sub);
   }
 }
