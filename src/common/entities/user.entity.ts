@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   BaseEntity,
   PrimaryColumn,
+  OneToMany,
 } from 'typeorm';
+import { Token } from './token.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -30,4 +32,7 @@ export class User extends BaseEntity {
 
   @Column()
   educational_program: string;
+
+  @OneToMany(() => Token, (token) => token.user)
+  tokens: Token[];
 }

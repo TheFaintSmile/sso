@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
-import { User } from 'src/common/entities';
+import { Token, User } from 'src/common/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
@@ -12,7 +12,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     JwtModule.register({
       global: true,
     }),
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User, Token]),
   ],
   controllers: [AuthController],
   providers: [AuthService],

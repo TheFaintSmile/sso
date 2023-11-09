@@ -29,10 +29,17 @@ export class AuthController {
     return response;
   }
 
-  @Get("/profile")
+  @Get('/profile/')
   public async profile(@Request() req): Promise<User> {
-    const { sub } = req.user
+    const { sub } = req.user;
 
     return await this.authService.profile(sub);
   }
+
+  // @Post('/logout/')
+  // public async logout(@Request() req): Promise<string> {
+  //   const { sub } = req.user;
+
+  //   return await '';
+  // }
 }
