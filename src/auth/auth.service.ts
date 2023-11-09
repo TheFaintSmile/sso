@@ -115,15 +115,28 @@ export class AuthService {
     });
   }
 
-  // public async logout(sub: string): Promise<string> {
-  //   return '';
-  // }
-
-  public async checkRefreshToken(refreshToken: string): Promise<Token> {
-    return await this.tokenRepository.findOneOrFail({
-      where: {
-        token: Equal(refreshToken),
+  public async logout(sub: string): Promise<string> {
+    const tokenInstance = await this.tokenRepository.findOneBy({
+      user: {
+        id: sub
       },
+      status: TokenStatus.ACTIVE
+    })
+    if(!tokenInstance) {
+      throw new HttpException("Token is not found.", HttpStatus.NOT_FOUND)
+    }
+    
+    await tokenInstance.remove()
+    
+    return 'Logout Succesful';
+  }
+
+  public async checkRefreshTokenFromUser(userID: string): Promise<Token> {
+    return await this.tokenRepository.findOneBy({
+      user: {
+        id: userID,
+      },
+      status: Equal(TokenStatus.ACTIVE)
     });
   }
 

@@ -36,10 +36,10 @@ export class AuthController {
     return await this.authService.profile(sub);
   }
 
-  // @Post('/logout/')
-  // public async logout(@Request() req): Promise<string> {
-  //   const { sub } = req.user;
+  @Post('/logout/')
+  public async logout(@Request() req): Promise<string> {
+    const { sub } = req.user;
 
-  //   return await '';
-  // }
+    return await this.authService.logout(sub);
+  }
 }

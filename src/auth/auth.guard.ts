@@ -10,6 +10,7 @@ import { IS_PUBLIC_KEY } from 'src/common/middlewares';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { AuthService } from './auth.service';
 import { Http2ServerRequest } from 'http2';
+import { IToken } from 'src/common/interfaces';
 
 @Injectable()
 export class BaseAuthGuard implements CanActivate {
@@ -64,8 +65,8 @@ export class BaseAuthGuard implements CanActivate {
     return token;
   }
 
-  async verifyToken(token: string): Promise<any> {
-    return await this.jwtService.verify(token, {
+  async verifyToken(token: string): Promise<IToken> {
+    return await this.jwtService.verify<IToken>(token, {
       secret: this.secret,
     });
   }
@@ -91,20 +92,19 @@ export class RefreshTokenGuard extends BaseAuthGuard {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const valid = await super.canActivate(context);
 
-    if (!valid) {
-      return false;
-    }
+    if (!valid) return false;
+    
 
     const request = context.switchToHttp().getRequest();
+
     const token = await this.getTokenFromHeader(request);
+    
+    const { sub } = await this.verifyToken(token);
 
-    const { sub } = (await this.verifyToken(token)) as any;
+    const realToken = await this.authService.checkRefreshTokenFromUser(sub);
 
-    // check if the token exists in the database as a refresh token
-    const realToken = await this.authService.checkRefreshToken(token);
-
-    if (!sub || sub !== realToken.user.id) {
-      throw new UnauthorizedException('Invalid user id.');
+    if (!realToken || token !== realToken.token) {
+      throw new UnauthorizedException('Token mismatch.');
     }
 
     return true;

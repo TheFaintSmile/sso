@@ -5,3 +5,10 @@ export interface LoginInterface {
   accessToken: string;
   user: User;
 }
+
+export interface IToken {
+  sub: string,
+  user: string,
+  iat: number
+  exp: number
+}
