@@ -16,7 +16,7 @@ import { IToken } from 'src/common/interfaces';
 export class BaseAuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly reflector: Reflector,
+    protected readonly reflector: Reflector,
     private readonly secret: string,
   ) {}
 
@@ -77,6 +77,19 @@ export class JwtAuthGuard extends BaseAuthGuard {
   constructor(jwtService: JwtService, reflector: Reflector) {
     super(jwtService, reflector, process.env.ACCESS_TOKEN_SECRET);
   }
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const skipGlobalGuard = this.reflector.get<boolean>(
+      'skipGlobalGuard',
+      context.getHandler(),
+    );
+
+    if (skipGlobalGuard) return true;
+
+    const valid = await super.canActivate(context);
+
+    return valid;
+  }
 }
 
 @Injectable()
@@ -93,12 +106,11 @@ export class RefreshTokenGuard extends BaseAuthGuard {
     const valid = await super.canActivate(context);
 
     if (!valid) return false;
-    
 
     const request = context.switchToHttp().getRequest();
 
     const token = await this.getTokenFromHeader(request);
-    
+
     const { sub } = await this.verifyToken(token);
 
     const realToken = await this.authService.checkRefreshTokenFromUser(sub);

@@ -1,9 +1,18 @@
-import { Body, Controller, Get, Post, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDTO } from 'src/common/dtos';
 import { LoginInterface } from 'src/common/interfaces';
 import { Public } from 'src/common/middlewares';
 import { User } from 'src/common/entities';
+import { RefreshTokenGuard } from './auth.guard';
+import { SkipGlobalGuard } from 'src/common/middlewares/guard.middleware';
 
 @Controller('/auth')
 export class AuthController {
@@ -34,6 +43,16 @@ export class AuthController {
     const { sub } = req.user;
 
     return await this.authService.profile(sub);
+  }
+
+  @SkipGlobalGuard()
+  @UseGuards(RefreshTokenGuard)
+  @Post('/refresh/')
+  public async refresh(
+    @Request() req,
+  ): Promise<Omit<LoginInterface, 'refreshToken'>> {
+    const { sub } = req.user;
+    return this.authService.refresh(sub);
   }
 
   @Post('/logout/')

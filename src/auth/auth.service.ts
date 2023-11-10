@@ -1,5 +1,10 @@
 import { HttpService } from '@nestjs/axios';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { XMLParser } from 'fast-xml-parser';
 import { Token, User } from 'src/common/entities';
 import { ORG_CODE } from './constant';
@@ -115,19 +120,40 @@ export class AuthService {
     });
   }
 
+  public async refresh(
+    sub: string,
+  ): Promise<Omit<LoginInterface, 'refreshToken'>> {
+    const user = await this.userRepository.findOneOrFail({
+      where: {
+        id: Equal(sub),
+      },
+    });
+
+    if (!user) throw new UnauthorizedException('You have to be logged in.');
+
+    const payload = {
+      sub: sub,
+      user: user.username,
+    };
+
+    const accessToken = await this.getAccessToken(payload);
+
+    return { accessToken, user };
+  }
   public async logout(sub: string): Promise<string> {
     const tokenInstance = await this.tokenRepository.findOneBy({
       user: {
-        id: sub
+        id: sub,
       },
-      status: TokenStatus.ACTIVE
-    })
-    if(!tokenInstance) {
-      throw new HttpException("Token is not found.", HttpStatus.NOT_FOUND)
+      status: TokenStatus.ACTIVE,
+    });
+
+    if (!tokenInstance) {
+      throw new HttpException('Token is not found.', HttpStatus.NOT_FOUND);
     }
-    
-    await tokenInstance.remove()
-    
+
+    await tokenInstance.remove();
+
     return 'Logout Succesful';
   }
 
@@ -136,7 +162,7 @@ export class AuthService {
       user: {
         id: userID,
       },
-      status: Equal(TokenStatus.ACTIVE)
+      status: Equal(TokenStatus.ACTIVE),
     });
   }
 

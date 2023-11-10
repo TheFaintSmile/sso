@@ -7,8 +7,8 @@ export interface LoginInterface {
 }
 
 export interface IToken {
-  sub: string,
-  user: string,
-  iat: number
-  exp: number
+  sub: string;
+  user: string;
+  iat: number;
+  exp: number;
 }
