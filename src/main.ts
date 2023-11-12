@@ -13,19 +13,21 @@ async function bootstrap() {
   const appConfig = config.get<AppConfig>(ConfigKey.App);
   app.useGlobalInterceptors(new ResponseInterceptor());
 
-  app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'https://ssocsui.vercel.app',
-      'https://csui-sso.vercel.app',
-      'https://sso-csui.vercel.app',
-      'https://ui-sso.vercel.app',
-      'https://csuisso.vercel.app',
-    ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
-  });
+  // app.enableCors({
+  //   origin: [
+  //     'http://localhost:3000',
+  //     'https://ssocsui.vercel.app',
+  //     'https://csui-sso.vercel.app',
+  //     'https://sso-csui.vercel.app',
+  //     'https://ui-sso.vercel.app',
+  //     'https://csuisso.vercel.app',
+  //   ],
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  //   credentials: true,
+  // });
 
+  app.enableCors();
+  
   await app.listen(appConfig.port || 3000);
 }
 bootstrap();
